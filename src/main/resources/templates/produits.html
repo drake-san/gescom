@@ -352,13 +352,24 @@
 									</form>
 					            </div>
 							</div>
-				        </div>  
-					
+				        </div>
 					</div> 
 					</div>
 				
 				</div>
-			</div> 
+			</div>
+		<div style="margin-top: 20px; font-size: 20px; font-weight: bold">
+				<ul  style="display: inline; " th:each="produit:${produits}">
+					<marquee th:if="${produit.quantite <= produit.quantiteAlert && produit.quantite != 0}">Les produits suivants sont bientot epuises :
+						<li style="list-style: none; display: inline" th:if="${produit.quantite <= produit.quantiteAlert}" th:text="${produit.designation}"></li>
+					</marquee>
+					<marquee th:if="${produit.quantite == 0 }">Les produits suivants sont epuises :
+						<li style="list-style: none; display: inline" th:if="${produit.quantite == 0}" th:text="${produit.designation}"></li>
+					</marquee>
+				</ul>
+
+
+		</div>
 	</div>
 		
 	<div sec:authorize="hasRole('ROLE_ADMIN')" th:insert="familles.html"></div>

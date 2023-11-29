@@ -35,7 +35,7 @@
 		       	</div>
 		     </div>
 		     <br/><br/>
-		     Nouveau famille :
+		     Nouvelle famille :
 		     <div class="input-group">
 	     		<input id="designation2" class="form-control" aria-label="Example select with button addon" />
 	       		  
@@ -85,7 +85,7 @@
 					type : "POST",
 					dataType : "json",  
 					success : function( json ) {   
-						alert("Categorie "+json.designation+" est mise à jour");
+						alert("Categorie "+json.designation+" est mise ï¿½ jour");
 						$( "#listeFamilles option:selected" ).text(json.designation); 
 						$("#familleNouveauArticle option[value="+json.code+"]").text(json.designation); 
 						$("#familleUpdateArticle option[value="+json.code+"]").text(json.designation); 
@@ -102,7 +102,7 @@
 					type : "POST",
 					dataType : "json",  
 					success : function( json ) {   
-						alert("Categorie "+json.designation+" est supprimé");
+						alert("Categorie "+json.designation+" est supprimï¿½");
 						$("#listeFamilles option:selected" ).remove();
 						$("#familleNouveauArticle option[value="+json.code+"]").remove(); 
 						$("#familleUpdateArticle option[value="+json.code+"]").remove(); 
@@ -120,7 +120,7 @@
 					type : "POST",
 					dataType : "json",  
 					success : function( json ) {   
-						alert("Famille ajouté");
+						alert("Famille ajoutï¿½");
 						$("#listeFamilles").append("<option value=\""+json.code+"\">"+json.designation+"</option>");
 						$("#familleNouveauArticle").append("<option value=\""+json.code+"\">"+json.designation+"</option>"); 
 						$("#familleUpdateArticle").append("<option value=\""+json.code+"\">"+json.designation+"</option>");  
