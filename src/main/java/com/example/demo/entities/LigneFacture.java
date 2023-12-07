@@ -21,8 +21,20 @@ public class LigneFacture  implements Serializable
 	
 	@ManyToOne
 	@JoinColumn(name="NUM_FACTURE")
-	private Facture facture; 
-	
+	private Facture facture;
+
+	@ManyToOne
+	@JoinColumn(name="NUM_COMMANDE")
+	private Commande commande;
+
+	public Commande getCommande() {
+		return commande;
+	}
+
+	public void setCommande(Commande commande) {
+		this.commande = commande;
+	}
+
 	@ManyToOne
 	@JoinColumn(name="REF_PRODUIT")
 	@NotFound(action = NotFoundAction.IGNORE)

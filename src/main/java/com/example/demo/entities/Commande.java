@@ -32,7 +32,7 @@ public class Commande  implements Serializable
 	private Date dateCommande;
 	
 	@NotNull
-	private boolean valide;
+	private boolean valide = true;
 	
 	@ManyToOne
 	@JoinColumn(name="CODE_CLIENT")
@@ -48,7 +48,18 @@ public class Commande  implements Serializable
 	
 	@OneToMany(mappedBy="commande",fetch=FetchType.LAZY)
 	private Collection<LigneCommande> lignesCommande;
-	
+
+	@OneToMany(mappedBy="commande",fetch=FetchType.LAZY)
+	private Collection<LigneFacture> lignesFacture;
+
+	public Collection<LigneFacture> getLignesFacture() {
+		return lignesFacture;
+	}
+
+	public void setLignesFacture(Collection<LigneFacture> lignesFacture) {
+		this.lignesFacture = lignesFacture;
+	}
+
 	private double total;
 	
 	@ManyToOne

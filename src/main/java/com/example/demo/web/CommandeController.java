@@ -2,6 +2,8 @@ package com.example.demo.web;
  
  
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,9 +11,17 @@ import java.util.HashMap;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import com.example.demo.entities.*;
+import com.example.demo.imetier.*;
+import com.itextpdf.html2pdf.HtmlConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page; 
-import org.springframework.stereotype.Controller; 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -20,18 +30,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.example.demo.entities.Client;
-import com.example.demo.entities.Commande;
-import com.example.demo.entities.Dossier;
-import com.example.demo.entities.Fournisseur;
-import com.example.demo.entities.LigneCommande;
-import com.example.demo.entities.Produit;
-import com.example.demo.imetier.IClientMetier;
-import com.example.demo.imetier.ICommandeMetier;
-import com.example.demo.imetier.IFournisseurMetier;
-import com.example.demo.imetier.ILcMetier;
-import com.example.demo.imetier.IProduitMetier;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 
 @Controller
@@ -44,8 +45,55 @@ public class CommandeController
 	@Autowired private IClientMetier metierClient;
 	
 	@Autowired private HttpSession session;
-	
-	
+	@Autowired private IReglementMetier metierReglement;
+	@Autowired private IReductionMetier metierRed;
+
+
+
+	@RequestMapping(value= {"/commandes/print"})
+	public ResponseEntity<InputStreamResource> index(Model model, @RequestParam(name="num",defaultValue="0")Long num,
+													 @RequestParam(name="dest",defaultValue="")String dest)
+	{
+		try {
+			Commande cmd = metierCommande.getCommande(num);
+			if(cmd==null) return null;
+
+			ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+			templateResolver.setSuffix(".html");
+			templateResolver.setTemplateMode("HTML");
+
+			TemplateEngine templateEngine = new TemplateEngine();
+			templateEngine.setTemplateResolver(templateResolver);
+
+			Context context = new Context();
+			ClassPathResource rcss = new ClassPathResource("/static/resources");
+			context.setVariable("url", rcss.getFile().getAbsolutePath());
+			context.setVariable("commande", cmd);
+			context.setVariable("nbrProduits", 0);
+			context.setVariable("maSociete", metierFournisseur.getFournisseur("CODE_0"));
+
+			ClassPathResource r = new ClassPathResource("/templates/commandeimpr");
+			String html = templateEngine.process(r.getPath(), context);
+
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			try { HtmlConverter.convertToPdf(html, out); }
+			catch (Exception e) { e.printStackTrace(); }
+
+			ByteArrayInputStream bis = new ByteArrayInputStream(out.toByteArray());
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Disposition", "inline; filename=Facture_"+cmd.getNumero()+".pdf");
+
+			return ResponseEntity
+					.ok()
+					.headers(headers)
+					.contentType(MediaType.APPLICATION_PDF)
+					.body(new InputStreamResource(bis));
+		}
+		catch (Exception e) { e.printStackTrace(); }
+		return null;
+	}
+
 	
  	@RequestMapping(value= {"/commandes"})
 	public String index( 

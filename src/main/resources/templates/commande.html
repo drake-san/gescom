@@ -26,8 +26,14 @@
 					
 					<div> 
 			            <div class="card-body row alert py-3"> 
-			            	<div class="col-md-2">
-			            		<b>Commande &numero;<span th:text="${commande.numero}" ></span></b>  
+			            	<div class="col-md-2 form-inline">
+			            		<b>Commande &numero;<span th:text="${commande.numero}" ></span></b>
+								<form sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_PRINT_FACTURES')" class="ml-2" th:action="@{/commandes/print(num=${commande.numero})}">
+									<input type="hidden" name="num" th:value="${commande.numero}">
+									<button type="submit" class="btn-sm btn-danger">
+										<i class="fa fa-file-pdf-o"></i>
+									</button>
+								</form>
 		            		</div>
 		            		
 		            		<div class="col-md-2">
